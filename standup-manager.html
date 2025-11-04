@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Stand-up Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        /* Team Names Section */
+        .team-names-wrapper {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .team-names {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            flex: 1;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .team-member {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        .team-member:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .team-member.active {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Manage Names Section */
+        .gear-icon {
+            background: #667eea;
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .gear-icon:hover {
+            background: #5568d3;
+            transform: rotate(90deg);
+        }
+
+        /* Greeting Message */
+        .greeting-message {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .greeting-message h2 {
+            color: white;
+            font-size: 1.8em;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .greeting-message.overtime {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .manage-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .manage-drawer.active {
+            right: 0;
+        }
+
+        .drawer-header {
+            padding: 20px;
+            background: #667eea;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-header h3 {
+            margin: 0;
+            font-size: 1.3em;
+        }
+
+        .close-drawer {
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .close-drawer:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .drawer-content {
+            padding: 20px;
+        }
+
+        .file-upload-section {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #667eea;
+        }
+
+        .file-upload-section h4 {
+            color: #495057;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+
+        .file-upload-section p {
+            color: #6c757d;
+            font-size: 0.85em;
+            margin-bottom: 12px;
+        }
+
+        .file-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.9em;
+        }
+
+        .btn-load-file {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-load-file:hover {
+            background: #5568d3;
+        }
+
+        .btn-clear-all {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .btn-clear-all:hover {
+            background: #c82333;
+        }
+
+        .add-name-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .add-name-section input {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .add-name-section input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-add-name {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add-name:hover {
+            background: #218838;
+        }
+
+        .names-list h4 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        #manageNamesList {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .name-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+
+        .name-item span {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .btn-remove {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-remove:hover {
+            background: #c82333;
+        }
+
+        /* Main Content Layout */
+        .main-content {
+            display: flex;
+            gap: 30px;
+        }
+
+        .left-section {
+            flex: 1;
+        }
+
+        .right-panel {
+            width: 350px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        /* Timer Section */
+        .timer-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .timer-display {
+            font-size: 6em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .timer-display.negative {
+            color: #dc3545;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-start {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-start:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-pause {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn-pause:hover {
+            background: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .btn-reset {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        /* Static Text Section */
+        .static-text {
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .static-text h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .static-text ul {
+            list-style-position: inside;
+            color: #495057;
+            line-height: 1.8;
+        }
+
+        /* Discussion Items Panel */
+        .discussion-panel h3 {
+            color: #495057;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .discussion-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .discussion-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .discussion-item-content {
+            flex: 1;
+        }
+
+        .discussion-item .btn-remove-item {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+
+        .discussion-item .btn-remove-item:hover {
+            background: #c82333;
+        }
+
+        .discussion-item .serial {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .discussion-item .name {
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin: 5px 0;
+        }
+
+        .discussion-item .title {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .add-discussion {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .add-discussion input {
+            padding: 10px;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .add-discussion input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn-add {
+            background: #667eea;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .discussion-guidelines {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 8px;
+        }
+
+        .discussion-guidelines h4 {
+            color: #495057;
+            margin-bottom: 12px;
+            font-size: 1em;
+        }
+
+        .discussion-guidelines ul {
+            list-style-position: inside;
+            color: #495057;
+            line-height: 1.8;
+            font-size: 0.9em;
+            margin: 0;
+            padding: 0;
+        }
+
+        .discussion-guidelines ul li {
+            margin-bottom: 4px;
+        }
+
+        .discussion-guidelines ul ul {
+            margin-left: 20px;
+            margin-top: 4px;
+        }
+
+        .discussion-guidelines ul ul li {
+            list-style-type: circle;
+            font-size: 0.95em;
+        }
+
+        /* Scrollbar Styling */
+        .discussion-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .discussion-list::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .discussion-list::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .discussion-list::-webkit-scrollbar-thumb:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Daily Stand-up Manager</h1>
+
+        <!-- Team Names with Gear Icon -->
+        <div class="team-names-wrapper">
+            <div class="team-names" id="teamNames">
+                <!-- Team members will be dynamically added here -->
+            </div>
+            <button class="gear-icon" id="gearIcon">⚙️</button>
+        </div>
+
+        <!-- Greeting Message -->
+        <div class="greeting-message" id="greetingMessage" style="display: none;">
+            <h2 id="greetingText"></h2>
+        </div>
+
+        <!-- Drawer Overlay -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+
+        <!-- Manage Names Drawer -->
+        <div class="manage-drawer" id="manageDrawer">
+            <div class="drawer-header">
+                <h3>Manage Team Names</h3>
+                <button class="close-drawer" id="closeDrawer">×</button>
+            </div>
+            <div class="drawer-content">
+                <div class="file-upload-section">
+                    <h4>Load Names from File</h4>
+                    <p>Upload a text file with one name per line</p>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="fileInput" accept=".txt">
+                        <button class="btn-load-file" id="loadFileBtn">Load File</button>
+                    </div>
+                </div>
+                <div class="add-name-section">
+                    <input type="text" id="newNameInput" placeholder="Enter new team member name">
+                    <button class="btn-add-name" id="addNameBtn">Add Name</button>
+                </div>
+                <div class="names-list">
+                    <h4>Current Team Members:</h4>
+                    <div id="manageNamesList"></div>
+                    <button class="btn-clear-all" id="clearAllNamesBtn">Remove All Names</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Left Section -->
+            <div class="left-section">
+                <!-- Timer Section -->
+                <div class="timer-section">
+                    <div class="timer-display" id="timerDisplay">01:00</div>
+                    <div class="timer-controls">
+                        <button class="btn btn-start" id="startBtn">Start</button>
+                        <button class="btn btn-pause" id="pauseBtn">Pause</button>
+                        <button class="btn btn-reset" id="resetBtn">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Static Text Section -->
+                <div class="static-text">
+                    <h3>Stand-up Guidelines</h3>
+                    <ul>
+                        <li>What did you accomplish yesterday?</li>
+                        <li>What will you work on today?</li>
+                        <li>Are there any blockers or impediments?</li>
+                        <li>Keep it brief - aim for 1 minute per person</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="right-panel">
+                <div class="discussion-panel">
+                    <h3>Items to Discuss</h3>
+                    <div class="discussion-list" id="discussionList">
+                        <!-- Discussion items will be added here -->
+                    </div>
+                    <div class="add-discussion">
+                        <input type="text" id="itemName" placeholder="Name">
+                        <input type="text" id="itemTitle" placeholder="Title/Topic">
+                        <button class="btn-add" id="addItemBtn">Add Item</button>
+                    </div>
+                    <div class="discussion-guidelines">
+                        <h4>Discussion Topics:</h4>
+                        <ul>
+                            <li>Need technical decision (architecture, design, PR, etc)</li>
+                            <li>Need feedback on something</li>
+                            <li>Requirements/spec discussion</li>
+                            <li>Observations sharing, tips for the team</li>
+                            <li>Project opportunities updates</li>
+                            <li>Feedback/encouragement to the team</li>
+                            <li>Anything to call out</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Team Members Data
+        const teamMembers = [
+            'Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank'
+        ];
+
+        // Timer Variables
+        let timerSeconds = 60; // Start with 60 seconds (1 minute)
+        let timerInterval = null;
+        let isRunning = false;
+
+        // Discussion Items Array
+        let discussionItems = [];
+        let itemCounter = 1;
+
+        
+        // Delegated remove handler for Manage Team Names
+        document.getElementById('manageNamesList').addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-remove');
+            if (!btn) return;
+            const idx = parseInt(btn.dataset.index, 10);
+            if (Number.isInteger(idx)) {
+                removeMemberByIndex(idx);
+            }
+        });
+// Initialize Team Names
+        function initTeamNames() {
+            const teamNamesContainer = document.getElementById('teamNames');
+            teamNamesContainer.innerHTML = ''; // Clear existing
+            teamMembers.forEach(member => {
+                const memberDiv = document.createElement('div');
+                memberDiv.className = 'team-member';
+                memberDiv.textContent = member;
+                memberDiv.addEventListener('click', () => handleTeamMemberClick(memberDiv, member));
+                teamNamesContainer.appendChild(memberDiv);
+            });
+        }
+
+        // Handle team member selection with confirmation if timer is running
+        function handleTeamMemberClick(memberDiv, memberName) {
+            const currentActive = document.querySelector('.team-member.active');
+            
+            // If clicking the same active member, do nothing
+            if (currentActive === memberDiv) {
+                return;
+            }
+            
+            // If timer is running and switching to a different member
+            if (isRunning && currentActive) {
+                const confirmed = confirm(
+                    `Timer is running for ${currentActive.textContent}. Do you want to switch to ${memberName}? This will reset the timer.`
+                );
+                
+                if (!confirmed) {
+                    return; // Dismiss and continue with current timer
+                }
+                
+                // User confirmed, reset timer
+                resetTimer();
+            }
+            
+            // Remove active class from all members
+            document.querySelectorAll('.team-member').forEach(m => {
+                m.classList.remove('active');
+            });
+            
+            // Add active class to clicked member
+            memberDiv.classList.add('active');
+            
+            // Update greeting message
+            updateGreetingMessage(memberName);
+        }
+
+        // Update greeting message based on selected name and timer state
+        function updateGreetingMessage(name) {
+            const greetingDiv = document.getElementById('greetingMessage');
+            const greetingText = document.getElementById('greetingText');
+            
+            if (!name) {
+                greetingDiv.style.display = 'none';
+                return;
+            }
+            
+            greetingDiv.style.display = 'block';
+            
+            if (timerSeconds <= 10 && timerSeconds > 0) {
+                greetingText.textContent = `It's time to wrap up ${name}!`;
+                greetingDiv.classList.add('overtime');
+            } else if (timerSeconds <= 0) {
+                greetingText.textContent = `Time's up ${name}!`;
+                greetingDiv.classList.add('overtime');
+            } else {
+                greetingText.textContent = `Hi ${name}, it's your turn!`;
+                greetingDiv.classList.remove('overtime');
+            }
+        }
+
+        // Timer Functions
+        function formatTime(seconds) {
+            const isNegative = seconds < 0;
+            const absSeconds = Math.abs(seconds);
+            const mins = Math.floor(absSeconds / 60);
+            const secs = absSeconds % 60;
+            const sign = isNegative ? '-' : '';
+            return `${sign}${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function updateTimerDisplay() {
+            const display = document.getElementById('timerDisplay');
+            display.textContent = formatTime(timerSeconds);
+            
+            // Add negative class if timer is below zero
+            if (timerSeconds < 0) {
+                display.classList.add('negative');
+            } else {
+                display.classList.remove('negative');
+            }
+            
+            // Update greeting message if someone is selected
+            const activeMember = document.querySelector('.team-member.active');
+            if (activeMember) {
+                updateGreetingMessage(activeMember.textContent);
+            }
+        }
+
+        function startTimer() {
+            if (!isRunning) {
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    timerSeconds--;
+                    updateTimerDisplay();
+                }, 1000);
+            }
+        }
+
+        function pauseTimer() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timerInterval);
+            }
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            timerSeconds = 60;
+            updateTimerDisplay();
+            
+            // Update greeting message for active member
+            const activeMember = document.querySelector('.team-member.active');
+            if (activeMember) {
+                updateGreetingMessage(activeMember.textContent);
+            }
+        }
+
+        // Discussion Items Functions
+        function renderDiscussionItems() {
+            const listContainer = document.getElementById('discussionList');
+            listContainer.innerHTML = '';
+            
+            discussionItems.forEach((item) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'discussion-item';
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'discussion-item-content';
+                
+                const serialSpan = document.createElement('span');
+                serialSpan.className = 'serial';
+                serialSpan.textContent = `#${item.serial}`;
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'name';
+                nameDiv.textContent = item.name;
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'title';
+                titleDiv.textContent = item.title;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn-remove-item';
+                removeBtn.textContent = '×';
+                removeBtn.setAttribute('data-item-serial', item.serial);
+                
+                contentDiv.appendChild(serialSpan);
+                contentDiv.appendChild(nameDiv);
+                contentDiv.appendChild(titleDiv);
+                
+                itemDiv.appendChild(contentDiv);
+                itemDiv.appendChild(removeBtn);
+                listContainer.appendChild(itemDiv);
+            });
+            
+            // Add event listeners to all remove buttons after rendering
+            listContainer.querySelectorAll('.btn-remove-item').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const serial = parseInt(this.getAttribute('data-item-serial'));
+                    removeDiscussionItemBySerial(serial);
+                });
+            });
+        }
+
+        function removeDiscussionItemBySerial(serial) {
+            const confirmed = confirm('Are you sure you want to remove this item?');
+            if (confirmed) {
+                const index = discussionItems.findIndex(item => item.serial === serial);
+                if (index > -1) {
+                    discussionItems.splice(index, 1);
+                    renderDiscussionItems();
+                }
+            }
+        }
+
+        function addDiscussionItem() {
+            const nameInput = document.getElementById('itemName');
+            const titleInput = document.getElementById('itemTitle');
+            
+            const name = nameInput.value.trim();
+            const title = titleInput.value.trim();
+            
+            if (name && title) {
+                discussionItems.push({
+                    serial: itemCounter++,
+                    name: name,
+                    title: title
+                });
+                
+                renderDiscussionItems();
+                
+                // Clear inputs
+                nameInput.value = '';
+                titleInput.value = '';
+                nameInput.focus();
+            } else {
+                alert('Please enter both name and title');
+            }
+        }
+
+        // Manage Team Names Functions
+        function openDrawer() {
+            const drawer = document.getElementById('manageDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            drawer.classList.add('active');
+            overlay.classList.add('active');
+            renderManageNamesList();
+        }
+
+        function closeDrawer() {
+            const drawer = document.getElementById('manageDrawer');
+            const overlay = document.getElementById('drawerOverlay');
+            drawer.classList.remove('active');
+            overlay.classList.remove('active');
+        }
+
+        function renderManageNamesList() {
+            const listContainer = document.getElementById('manageNamesList');
+            listContainer.innerHTML = '';
+
+            teamMembers.forEach((member, idx) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'name-item';
+
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = member;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'btn-remove';
+                removeBtn.textContent = 'Remove';
+                removeBtn.dataset.index = String(idx);
+
+                itemDiv.appendChild(nameSpan);
+                itemDiv.appendChild(removeBtn);
+                listContainer.appendChild(itemDiv);
+            });
+        }
+
+
+        function removeMemberByName(memberName) {
+            const confirmed = confirm(`Are you sure you want to remove ${memberName}?`);
+            
+            if (confirmed) {
+                // Check if this member is currently active
+                const activeMember = document.querySelector('.team-member.active');
+                if (activeMember && activeMember.textContent === memberName) {
+                    // Reset timer if removing active member
+                    if (isRunning) {
+                        pauseTimer();
+                    }
+                    resetTimer();
+                    // Hide greeting message
+                    document.getElementById('greetingMessage').style.display = 'none';
+                }
+                
+                const index = teamMembers.indexOf(memberName);
+                if (index > -1) {
+                    teamMembers.splice(index, 1);
+                    initTeamNames();
+                    renderManageNamesList();
+                }
+            }
+        }
+        function removeMemberByIndex(index) {
+            const memberName = teamMembers[index];
+            if (memberName == null) return;
+
+            const confirmed = confirm(`Are you sure you want to remove ${memberName}?`);
+            if (!confirmed) return;
+
+            const activeMember = document.querySelector('.team-member.active');
+            if (activeMember && activeMember.textContent === memberName) {
+                if (isRunning) pauseTimer();
+                resetTimer();
+                document.getElementById('greetingMessage').style.display = 'none';
+            }
+
+            teamMembers.splice(index, 1);
+            initTeamNames();
+            renderManageNamesList();
+        }
+
+
+        function addTeamMember() {
+            const nameInput = document.getElementById('newNameInput');
+            const name = nameInput.value.trim();
+            
+            if (name) {
+                if (teamMembers.includes(name)) {
+                    alert('This name already exists!');
+                    return;
+                }
+                
+                teamMembers.push(name);
+                initTeamNames();
+                renderManageNamesList();
+                nameInput.value = '';
+                nameInput.focus();
+            } else {
+                alert('Please enter a name');
+            }
+        }
+
+        function loadNamesFromFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+            
+            if (!file.name.endsWith('.txt')) {
+                alert('Please upload a .txt file');
+                return;
+            }
+            
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const names = content.split('\n')
+                    .map(name => name.trim())
+                    .filter(name => name.length > 0);
+                
+                if (names.length === 0) {
+                    alert('No names found in the file');
+                    return;
+                }
+                
+                // Ask if user wants to replace or append
+                const replace = confirm(
+                    `Found ${names.length} name(s) in the file.\n\n` +
+                    'Click OK to REPLACE current names\n' +
+                    'Click Cancel to ADD to current names'
+                );
+                
+                if (replace) {
+                    teamMembers.length = 0; // Clear array
+                }
+                
+                let addedCount = 0;
+                let duplicateCount = 0;
+                
+                names.forEach(name => {
+                    if (!teamMembers.includes(name)) {
+                        teamMembers.push(name);
+                        addedCount++;
+                    } else {
+                        duplicateCount++;
+                    }
+                });
+                
+                initTeamNames();
+                renderManageNamesList();
+                
+                // Clear file input
+                fileInput.value = '';
+                
+                // Show summary
+                let message = `Successfully loaded!\n\n`;
+                message += `Added: ${addedCount} name(s)\n`;
+                if (duplicateCount > 0) {
+                    message += `Skipped (duplicates): ${duplicateCount} name(s)`;
+                }
+                alert(message);
+            };
+            
+            reader.onerror = function() {
+                alert('Error reading file. Please try again.');
+            };
+            
+            reader.readAsText(file);
+        }
+
+        function clearAllNames() {
+            if (teamMembers.length === 0) {
+                alert('No names to remove!');
+                return;
+            }
+            
+            const confirmed = confirm(
+                `Are you sure you want to remove ALL ${teamMembers.length} team member(s)?\n\n` +
+                'This action cannot be undone.'
+            );
+            
+            if (confirmed) {
+                // Stop timer if running
+                if (isRunning) {
+                    pauseTimer();
+                }
+                
+                // Reset timer and hide greeting
+                resetTimer();
+                document.getElementById('greetingMessage').style.display = 'none';
+                
+                // Clear all team members
+                teamMembers.length = 0;
+                
+                // Update displays
+                initTeamNames();
+                renderManageNamesList();
+                
+                alert('All team members have been removed.');
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('startBtn').addEventListener('click', startTimer);
+        document.getElementById('pauseBtn').addEventListener('click', pauseTimer);
+        document.getElementById('resetBtn').addEventListener('click', resetTimer);
+        document.getElementById('addItemBtn').addEventListener('click', addDiscussionItem);
+        document.getElementById('gearIcon').addEventListener('click', openDrawer);
+        document.getElementById('closeDrawer').addEventListener('click', closeDrawer);
+        document.getElementById('drawerOverlay').addEventListener('click', closeDrawer);
+        document.getElementById('addNameBtn').addEventListener('click', addTeamMember);
+        document.getElementById('loadFileBtn').addEventListener('click', loadNamesFromFile);
+        document.getElementById('clearAllNamesBtn').addEventListener('click', clearAllNames);
+
+        // Allow Enter key to add items
+        document.getElementById('itemTitle').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addDiscussionItem();
+            }
+        });
+
+        // Allow Enter key to add names
+        document.getElementById('newNameInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addTeamMember();
+            }
+        });
+
+        // Initialize
+        initTeamNames();
+        updateTimerDisplay();
+    </script>
+</body>
+</html>
