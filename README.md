@@ -5,9 +5,39 @@ A single-page web application designed to streamline your team's daily stand-up 
 ![Stand-up Manager](https://img.shields.io/badge/version-1.0-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+## Quick Start
+
+### Running the App
+
+1. **Download** the `standup-manager.html` file from this repository
+2. **Double-click** the file to open it in your default web browser
+3. **Start using** immediately - no installation required!
+
+**Alternative methods:**
+
+- Right-click the file → "Open with" → Choose your preferred browser
+- Drag and drop the file into an open browser window
+- From browser: File → Open → Select the HTML file
+
+### First Time Setup
+
+1. **Add your team members:**
+
+   - Click the gear icon (⚙️) next to the team names area
+   - Either type names manually or upload a `.txt` file with one name per line
+   - Sample team file format:
+     ```
+     Alice
+     Bob
+     Charlie
+     ```
+
+2. **You're ready to go!** Select a team member and start your stand-up
+
 ## Features
 
 ### 🎯 Timer Management
+
 - **1-minute countdown timer** that starts from 01:00
 - Timer continues into negative values to track overtime
 - **Start, Pause, and Reset** controls
@@ -18,6 +48,7 @@ A single-page web application designed to streamline your team's daily stand-up 
   - "Time's up [Name]!" (when timer goes negative)
 
 ### 👥 Team Member Management
+
 - Horizontal display of team member names with click-to-select functionality
 - **Single active selection** - only one team member can be selected at a time
 - **Smart timer protection** - switching members while timer is running triggers a confirmation dialog
@@ -30,6 +61,7 @@ A single-page web application designed to streamline your team's daily stand-up 
   - Automatic duplicate detection
 
 ### 📝 Discussion Items Panel
+
 - Track items that need further discussion after stand-up
 - Each item includes:
   - Auto-incrementing serial number
@@ -40,30 +72,17 @@ A single-page web application designed to streamline your team's daily stand-up 
 - **Discussion Topics guide** for common stand-up discussion points
 
 ### 📋 Stand-up Guidelines
+
 - Built-in reference for standard stand-up questions:
   - What did you accomplish yesterday?
   - What will you work on today?
   - Are there any blockers or impediments?
   - Keep it brief - aim for 1 minute per person
 
-## Installation & Usage
-
-### Local Use
-1. Download the `standup-manager.html` file
-2. Open it in any modern web browser (Chrome, Firefox, Safari, Edge)
-3. No installation or dependencies required - it's completely self-contained!
-
-### Deployment
-This is a static HTML file that can be deployed to any web hosting service:
-
-- **GitHub Pages**: Upload to your repo and enable GitHub Pages
-- **Netlify**: Drag and drop the file to Netlify
-- **Vercel**: Deploy directly from your repository
-- **Any static hosting**: Simply upload the HTML file
-
 ## How to Use
 
 ### Setting Up Your Team
+
 1. Click the **gear icon (⚙️)** on the right side of the team names section
 2. Choose one of the following methods:
    - **Manual Entry**: Type names one by one and click "Add Name"
@@ -77,6 +96,7 @@ This is a static HTML file that can be deployed to any web hosting service:
      ```
 
 ### Running a Stand-up
+
 1. **Select a team member** by clicking their name
 2. **Start the timer** when they begin speaking
 3. Watch for the greeting message to change:
@@ -87,6 +107,7 @@ This is a static HTML file that can be deployed to any web hosting service:
 6. **Reset** timer for each new speaker
 
 ### Managing Discussion Items
+
 1. During stand-up, add items to discuss later
 2. Enter the person's name and topic in the right panel
 3. Click "Add Item" or press Enter
@@ -104,6 +125,7 @@ This is a static HTML file that can be deployed to any web hosting service:
 ## Browser Compatibility
 
 Works on all modern browsers:
+
 - ✅ Chrome/Edge (recommended)
 - ✅ Firefox
 - ✅ Safari
@@ -127,16 +149,14 @@ Works on all modern browsers:
 ## Future Enhancements
 
 Potential features for future versions:
-- Local storage persistence
-- Export discussion items
-- Customizable timer duration
-- Sound notifications
-- Meeting history tracking
-- Dark mode
+
+- Way for parctipants to add items to discuss later remotely
+- Sound notification
 
 ## Contributing
 
 Contributions are welcome! Feel free to:
+
 - Report bugs
 - Suggest new features
 - Submit pull requests
@@ -148,6 +168,7 @@ MIT License - Feel free to use and modify for your team's needs.
 ## Support
 
 If you encounter any issues or have questions:
+
 1. Check the Discussion Topics guide in the app
 2. Review this README
 3. Open an issue on GitHub
